@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class StreamingStats
-  attr_reader :epsilon, :count, :mean
+  attr_reader :epsilon, :count, :mean, :sum
   def initialize(epsilon: 0.1)
     @epsilon = epsilon
     @count = 0
@@ -12,6 +12,7 @@ class StreamingStats
 
   def insert(value)
     @count += 1
+    @sum += value
     delta = value - @mean 
     @mean = @mean + (delta/@count)
     @m2 = @m2 + (delta * (value-@mean))
