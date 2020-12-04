@@ -24,12 +24,12 @@ class StreamingStatsTest < Minitest::Test
     end
   end
 
-  def test_quartile
+  def test_mean
     gk = StreamingStats.new(epsilon: 0.01)
     10000.times do
       gk.insert rand
     end
-    assert_in_delta gk.quantile(0.5), 0.5, 0.03 
+    assert_in_delta gk.mean, 0.5, 0.03 
     #assert_in_delta gk.quantile(0.1), 0.1, 0.03 
     #assert_in_delta gk.quantile(0.9), 0.9, 0.03 
   end

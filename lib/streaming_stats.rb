@@ -13,7 +13,7 @@ class StreamingStats
     @values.push value
   end
 
-  def quantile(i)
+  def mean
     @values.sum / @count
   end
 end
