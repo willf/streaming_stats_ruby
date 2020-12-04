@@ -32,6 +32,17 @@ class StreamingStatsTest < Minitest::Test
     assert_in_delta gk.mean, 0.5, 0.03 
     assert_in_delta gk.variance, 1/12.0, 0.05
     assert_in_delta gk.sqrt, Math.sqrt(1/12.0), 0.05 
+    assert_equal gk.count, 10000
+    assert_in_delta gk.sum, gk.mean*gk.count, 0.01
+  end
+
+  def test_initialized_stats
+    gk = StreamingStats.new(epsilon: 0.01)
+    assert_in_delta gk.mean, 0.0, 0.001
+    assert_in_delta gk.variance, 0.0, 0.001
+    assert_in_delta gk.sqrt, 0.0, 0.001
+    assert_equal gk.count, 0
+    assert_in_delta gk.sum, 0.0, 0.001
   end
 
 
