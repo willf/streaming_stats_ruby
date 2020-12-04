@@ -24,15 +24,17 @@ class StreamingStatsTest < Minitest::Test
     end
   end
 
-  def test_mean
+  def test_basic_stats
     gk = StreamingStats.new(epsilon: 0.01)
     10000.times do
       gk.insert rand
     end
     assert_in_delta gk.mean, 0.5, 0.03 
-    #assert_in_delta gk.quantile(0.1), 0.1, 0.03 
-    #assert_in_delta gk.quantile(0.9), 0.9, 0.03 
+    assert_in_delta gk.variance, 1/12.0, 0.05
+    assert_in_delta gk.sqrt, Math.sqrt(1/12.0), 0.05 
   end
+
+
 
 
 end
