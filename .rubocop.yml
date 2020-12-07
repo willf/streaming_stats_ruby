@@ -1,0 +1,12 @@
+Metrics/AbcSize:
+  Enabled: false
+Metrics/MethodLength:
+  Enabled: false
+Naming/VariableNumber:
+  Enabled: false
+Naming/MethodParameterName:
+  Enabled: false
+Naming/VariableName:
+  Enabled: false
+AllCops:
+    NewCops: enable

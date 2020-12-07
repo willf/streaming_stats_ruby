@@ -1,8 +1,9 @@
 # frozen_string_literal: true
-require_relative "test_helper"
+
+require_relative 'test_helper'
 
 class StreamingStatsTest < Minitest::Test
-  def test_default_initialization 
+  def test_default_initialization
     gk = StreamingStats.new
     assert_equal gk.epsilon, 0.1
   end
@@ -17,20 +18,20 @@ class StreamingStatsTest < Minitest::Test
     300.times do |i|
       assert_equal gk.n, i
       gk.insert i
-      assert_equal gk.n, i+1
+      assert_equal gk.n, i + 1
     end
   end
 
   def test_basic_stats
     gk = StreamingStats.new(epsilon: 0.01)
-    1000.times do
+    1_000.times do
       gk.insert rand
     end
-    assert_in_delta gk.mean, 0.5, 0.03 
-    assert_in_delta gk.variance, 1/12.0, 0.05
-    assert_in_delta gk.stddev, Math.sqrt(1/12.0), 0.05 
+    assert_in_delta gk.mean, 0.5, 0.03
+    assert_in_delta gk.variance, 1 / 12.0, 0.05
+    assert_in_delta gk.stddev, Math.sqrt(1 / 12.0), 0.05
     assert_equal gk.n, 1000
-    assert_in_delta gk.sum, gk.mean*gk.n, 0.01
+    assert_in_delta gk.sum, gk.mean * gk.n, 0.01
   end
 
   def test_initialized_stats
@@ -44,17 +45,13 @@ class StreamingStatsTest < Minitest::Test
 
   def test_quantiles
     gk = StreamingStats.new(epsilon: 0.01)
-    10000.times do
+    10_000.times do
       gk.insert rand
     end
-    puts gk.S.size
+    # puts gk.S.size
     assert_in_delta gk.quantile(0.1), 0.1, 0.03
     assert_in_delta gk.quantile(0.5), 0.5, 0.03
     assert_in_delta gk.quantile(0.5), gk.mean, 0.03
     assert_in_delta gk.quantile(0.9), 0.9, 0.03
   end
-
-
-
-
 end
