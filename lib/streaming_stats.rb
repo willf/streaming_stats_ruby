@@ -2,10 +2,11 @@
 
 require 'ostruct'
 
+# Public: StreamingStats class
 # StreamingStats is a Ruby class that takes streaming numeric data
 # and return descriptive statistics with minimal overhead.
 # A stream with n entries will only require about log2(n) storage.
-# The main update function is `insert`, and the object can 
+# The main update function is `insert`, and the object can
 # return
 # - n (number of values inserted)
 # - sum
@@ -22,15 +23,41 @@ require 'ostruct'
 # The variable names, etc. of the quantile method are adopted from that project
 #
 # The compression size can be estimated with the method compression_size
-# 
+#
 # require 'streaming_stats'
-# gk = StreaminStats.new(0.1)
-# 10_000.times {gk.insert rand}
-# gk.n 
+# > gk = StreamingStats.new(epsilon: 0.01); 10000.times {gk.insert rand}
+# => 10000
+# > gk.n
+# => 10000
+# > gk.sum
+# => 4985.484627445102
+# > gk.mean
+# => 0.4985484627445139
+# > gk.stddev
+# => 0.288236161831176
+# > gk.variance
+# => 0.08308008498716787
+# > gk.min
+# => 0.0001414880872682156
+# > gk.max
+# => 0.9999396732975679
+# > gk.quantile 0.1
+# => 0.08869274826771956
+# > gk.quantile 0.5
+# => 0.4944707523857559
+# > gk.quantile 0.9
+# => 0.9004683944698589
+# > gk.quantile 0.999
+# => 0.9999396732975679
+# gk.compression_ratio
+# => 0.9927
 class StreamingStats
   GK_MAX_BAND = 999_999
   attr_reader :epsilon, :n, :mean, :sum
 
+  # epsilon - "epsilon is allowable error. As epsilon becomes smaller,
+  # the accuracy of the approximation improves, but the class
+  # consumes more memory" see https://www.stevenengelhardt.com/series/calculating-percentiles-on-streaming-data/
   def initialize(epsilon: 0.1)
     @n = 0
     @mean = 0.0
@@ -42,10 +69,22 @@ class StreamingStats
     @S = []
   end
 
-  def s 
+  # Public: Returns the compression list
+  # For debugging only
+  def s
     @S
   end
 
+  # Public: inserts a value from a stream, updating the state
+  #
+  # value - The Numeric to be inserted
+  #
+  # Examples
+  #
+  #   insert(100)
+  #   => 100
+  #
+  # Returns the Numeric inserted
   def insert(value)
     ## Basic stats accumulators
     @n += 1
@@ -59,54 +98,92 @@ class StreamingStats
     value
   end
 
+  # Public: Returns the variance of the streamed data. Initialized to 0.0
+  #
+  # Examples
+  #
+  #   variance
+  #   => 1.02
+  #
+  # Returns the variance
   def variance
     return 0 if @n <= 1
 
     @m2 / @n
   end
 
+  # Public: Returns the standard deviation of the streamed data. Initialized to 0.0
+  #
+  # Examples
+  #
+  #   variance
+  #   => 1.02
+  #
+  # Returns the standard deviation
   def stddev
     Math.sqrt(variance)
   end
 
+  # Public: Returns the approximate quantile (percentile) at phi
+  #
+  # phi - A Numeric between 0.0 and 1.0, inclusive
+  #
+  # Examples
+  #
+  #   quantile(0.5)
+  #   => 5.01
+  #
+  # Returns the approximate quantile
   def quantile(phi)
     throw ArgumentError.new("#{phi} must be between 0.0 and 1.0 inclusive") unless phi.between?(0.0, 1.0)
     en = @epsilon * @n
     r = (phi * @n).ceil
     rmin = 0
-    (0..@S.size-1).each do |i|
+    (0..@S.size - 1).each do |i|
       rmin += @S[i].g
       rmax = rmin + @S[i].delta
       return @S[i].v if r - rmin <= en && rmax - r <= en
     end
-    throw "Unknown error"
+    throw 'Unknown error'
   end
 
-  def min 
+  # Public: Returns the minimum value so far inserted
+  #
+  # Examples
+  #
+  #   max
+  #   => 500.0
+  #
+  # Returns the minimum value
+  def min
     @S[0].v
   end
 
-  def max 
+  # Public: Returns the maximum value so far inserted
+  #
+  # Examples
+  #
+  #   max
+  #   => 500.0
+  #
+  # Returns the maximum value
+  def max
     @S.last.v
   end
 
+  # Public: Returns the compression ratio achieved
+  #
+  # Examples
+  #
+  #   compression_ration
+  #   => 99.1
+  #
+  # Returns the ompression ratio achieved
   def compression_ratio
     1.0 - (1.0 * @S.size / @n)
   end
 
-  # quantile(phi) {
-  #   var en = this.epsilon * this.n;
-  #   var r = Math.ceil(phi * this.n);
-  #   var rmin = 0;
-  #   for (var i = 0; i < this.S.length; ++i) {
-  #     rmin += this.S[i].g;
-  #     var rmax = rmin + this.S[i].delta;
-  #     if (r - rmin <= en && rmax - r <= en)
-  #       return this.S[i].v;
-  #   }
-  #   throw "Could not resolve quantile";
-  # }
-
+  # Private: Compresses the number of values stored
   def _compress
     two_epsilon_n = 2 * @epsilon * @n
     bands = StreamingStats._construct_band_lookup(two_epsilon_n)
@@ -136,29 +213,7 @@ class StreamingStats
     end
   end
 
-  # _compress() {
-  #   var two_epsilon_n = 2 * this.epsilon * this.n;
-  #   var bands = GK._construct_band_lookup(two_epsilon_n);
-  #   // We must always keep the first & last nodes as those
-  #   // are global min/max
-  #   for (var i = this.S.length - 2; i >= 1; --i) {
-  #     if (bands[this.S[i].delta] <= bands[this.S[i+1].delta]) {
-  #       var start_indx = i;
-  #       var g_i_star = this.S[i].g;
-  #       while (start_indx >= 2 && bands[this.S[start_indx-1].delta] < bands[this.S[i].delta]) {
-  #         --start_indx;
-  #         g_i_star += this.S[start_indx].g;
-  #       }
-  #       if ((g_i_star + this.S[i+1].g + this.S[i+1].delta) < two_epsilon_n) {
-  #         // The below is a delete_tuples([start_indx, i]) operation
-  #         var merged = {v: this.S[i+1].v, g: g_i_star + this.S[i+1].g, delta: this.S[i+1].delta};
-  #         this.S.splice(start_indx, 2 + (i - start_indx), merged);
-  #         i = start_indx;
-  #       }
-  #     }
-  #   }
-  # }
-
+  # Private: Constructs a band lookup
   def self._construct_band_lookup(two_epsilon_n)
     bands = Array.new(two_epsilon_n + 1)
     bands[0] = GK_MAX_BAND
@@ -176,34 +231,7 @@ class StreamingStats
     bands
   end
 
-  # static _construct_band_lookup(two_epsilon_n) {
-  #   var bands = Array(two_epsilon_n + 1);
-  #   bands[0] = GK_MAX_BAND; // delta = 0 is its own band
-  #   bands[two_epsilon_n] = 0; // delta = two_epsilon_n is band 0 by definition
-
-  #   var p = Math.floor(two_epsilon_n);
-  #   for (var alpha = 1; alpha <= Math.ceil(Math.log2(two_epsilon_n)); ++alpha) {
-  #       var two_alpha_minus_1 = Math.pow(2, alpha-1);
-  #       var two_alpha = Math.pow(2, alpha);
-  #       var lower = p - two_alpha - (p % two_alpha);
-  #       if (lower < 0)
-  #           lower = 0;
-  #       var upper = p - two_alpha_minus_1 - (p % two_alpha_minus_1);
-  #       for (var i = lower + 1; i <= upper; ++i) {
-  #           bands[i] = alpha;
-  #       }
-  #   }
-
-  #   return bands;
-  # }
-
-  # _do_insert(v) {
-  #   var i = this._find_insertion_index(v);
-  #   var delta = this._determine_delta(i);
-  #   var tuple = {v: v, g: 1, delta: delta};
-  #   this.S.splice(i, 0, tuple);
-  # }
-
+  # Private: Actually does a new insertion into S
   def _do_insert(v)
     i = _find_insertion_index(v)
     delta = _determine_delta(i)
@@ -212,28 +240,14 @@ class StreamingStats
     @S
   end
 
-  # _find_insertion_index(v) {
-  #   var i = 0;
-  #   while (i < this.S.length && v >= this.S[i].v)
-  #     ++i;
-  #   return i;
-  # }
-
+  # Private: Find where to insert
   def _find_insertion_index(value)
     i = 0
     i += 1 while i < @S.size && value >= @S[i].v
     i
   end
 
-  # _determine_delta(i) {
-  #   if (this.n < this.one_over_2e)
-  #     return 0;
-  #   else if (i == 0 || i == this.S.length)
-  #     return 0;
-  #   else
-  #     return Math.floor(2 * this.epsilon * this.n) - 1;
-  # }
-
+  # Private: Determine delta
   def _determine_delta(i)
     return 0 if @n < @one_over_2e
     return 0 if i.zero? || i == @S.size

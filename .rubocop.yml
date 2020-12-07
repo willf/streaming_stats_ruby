@@ -8,5 +8,7 @@ Naming/MethodParameterName:
   Enabled: false
 Naming/VariableName:
   Enabled: false
+Metrics/ClassLength:
+  Enabled: false
 AllCops:
     NewCops: enable
