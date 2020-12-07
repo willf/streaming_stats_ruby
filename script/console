@@ -1,0 +1,6 @@
+#!/bin/sh
+# Usage: script/console
+
+set -e
+
+bundle exec pry -r ./setup.rb $@
