@@ -2,6 +2,31 @@
 
 require 'ostruct'
 
+# StreamingStats is a Ruby class that takes streaming numeric data
+# and return descriptive statistics with minimal overhead.
+# A stream with n entries will only require about log2(n) storage.
+# The main update function is `insert`, and the object can 
+# return
+# - n (number of values inserted)
+# - sum
+# - mean
+# - stddev
+# - variance
+# - quantile (i.e. percentile)
+# - min
+# - max
+# The sum, mean, stddev, variance functions are calculated more or less
+# as in the technical description here: https://www.johndcook.com/blog/standard_deviation/
+#
+# The quantile method is a Ruby port of https://github.com/sengelha/streaming-percentiles-js
+# The variable names, etc. of the quantile method are adopted from that project
+#
+# The compression size can be estimated with the method compression_size
+# 
+# require 'streaming_stats'
+# gk = StreaminStats.new(0.1)
+# 10_000.times {gk.insert rand}
+# gk.n 
 class StreamingStats
   GK_MAX_BAND = 999_999
   attr_reader :epsilon, :n, :mean, :sum
@@ -15,6 +40,10 @@ class StreamingStats
     @epsilon = epsilon
     @one_over_2e = 1 / (2 * epsilon)
     @S = []
+  end
+
+  def s 
+    @S
   end
 
   def insert(value)
@@ -41,15 +70,24 @@ class StreamingStats
   end
 
   def quantile(phi)
+    throw ArgumentError.new("#{phi} must be between 0.0 and 1.0 inclusive") unless phi.between?(0.0, 1.0)
     en = @epsilon * @n
     r = (phi * @n).ceil
     rmin = 0
-    (0..@S.size).each do |i|
+    (0..@S.size-1).each do |i|
       rmin += @S[i].g
       rmax = rmin + @S[i].delta
       return @S[i].v if r - rmin <= en && rmax - r <= en
     end
-    throw "Couldn't resolve quantile"
+    throw "Unknown error"
+  end
+
+  def min 
+    @S[0].v
+  end
+
+  def max 
+    @S.last.v
   end
 
   def compression_ratio

@@ -48,10 +48,11 @@ class StreamingStatsTest < Minitest::Test
     10_000.times do
       gk.insert rand
     end
-    # puts gk.S.size
     assert_in_delta gk.quantile(0.1), 0.1, 0.03
     assert_in_delta gk.quantile(0.5), 0.5, 0.03
     assert_in_delta gk.quantile(0.5), gk.mean, 0.03
     assert_in_delta gk.quantile(0.9), 0.9, 0.03
+    assert_equal gk.quantile(0.0), gk.min
+    assert_equal gk.quantile(1.0), gk.max
   end
 end
