@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-require 'rubocop/rake_task'
+require 'rake/testtask'
 
-task default: %w[lint test]
-
-RuboCop::RakeTask.new(:lint) do |task|
-  task.patterns = ['lib/**/*.rb', 'test/**/*.rb']
-  task.fail_on_error = false
+Rake::TestTask.new :test do |t|
+  t.libs << 'test'
+  t.pattern = 'test/**/test_*.rb'
 end
 
-task :test do
-  ruby 'test/test_streaming_stats.rb'
+desc 'Run tests and linter w/auto-fix'
+task :default do
+  sh %(script/lint)
+  sh %(script/test)
 end
