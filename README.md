@@ -1,5 +1,6 @@
 # Streaming Stats
 
+![Ruby](https://github.com/willf/streaming-stats/workflows/Ruby/badge.svg)
 
 StreamingStats is a Ruby class that takes streaming numeric data
 and return descriptive statistics with minimal overhead.
