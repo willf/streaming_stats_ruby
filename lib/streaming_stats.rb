@@ -103,7 +103,7 @@ class StreamingStats
   # Examples
   #
   #   variance
-  #   => 1.02
+  #   => 2.00
   #
   # Returns the variance
   def variance
@@ -116,8 +116,8 @@ class StreamingStats
   #
   # Examples
   #
-  #   variance
-  #   => 1.02
+  #   stddev
+  #   => 1.414
   #
   # Returns the standard deviation
   def stddev
@@ -178,7 +178,7 @@ class StreamingStats
   #   compression_ration
   #   => 99.1
   #
-  # Returns the ompression ratio achieved
+  # Returns the compression ratio achieved
   def compression_ratio
     1.0 - (1.0 * @S.size / @n)
   end
@@ -205,7 +205,7 @@ class StreamingStats
             g: g_i_star + @S[i + 1].g,
             delta: @S[i + 1].delta
           )
-          splice!(@S, start_indx, 2 + (i - start_indx), merged)
+          StreamingStats.splice!(@S, start_indx, 2 + (i - start_indx), merged)
           i = start_indx
         end
       end
@@ -236,7 +236,7 @@ class StreamingStats
     i = _find_insertion_index(v)
     delta = _determine_delta(i)
     tuple = OpenStruct.new(v: v, g: 1, delta: delta)
-    splice!(@S, i, 0, tuple)
+    StreamingStats.splice!(@S, i, 0, tuple)
     @S
   end
 
@@ -253,5 +253,13 @@ class StreamingStats
     return 0 if i.zero? || i == @S.size
 
     (2 * @epsilon * @n).floor - 1
+  end
+
+  # from https://stackoverflow.com/questions/6892551/array-prototype-splice-in-ruby
+  # Same as Javascript splice, but not put on Array prototype
+  def self.splice!(array, start, len, *replacements)
+    r = array.slice!(start, len)
+    array[start, 0] = replacements if replacements
+    r
   end
 end
