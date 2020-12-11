@@ -2,7 +2,6 @@
 
 source 'https://rubygems.org'
 gem 'activesupport', '~> 5.2'
-gem 'dotenv'
 
 group :development, :test do
   gem 'byebug'

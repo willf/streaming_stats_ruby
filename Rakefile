@@ -7,7 +7,7 @@ Rake::TestTask.new :test do |t|
   t.pattern = 'test/**/test_*.rb'
 end
 
-desc 'Run tests and linter w/auto-fix'
+desc 'Run tests and linter'
 task :default do
   sh %(script/lint)
   sh %(script/test)

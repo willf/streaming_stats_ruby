@@ -3,4 +3,4 @@
 
 set -e
 
-bundle exec pry -r ./setup.rb $@
+bundle exec pry -r ./streaming_stats.rb $@
