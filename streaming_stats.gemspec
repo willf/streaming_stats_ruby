@@ -10,7 +10,12 @@ Gem::Specification.new do |s|
   s.description = 'Calculates descriptive statistics from streams with minimal overhead'
   s.authors     = ['Will Fitzgerald']
   s.email       = 'will.fitzgerald@gmail.com'
-  s.files       = FileList['lib/**/*', 'script/*', '[A-Z]*', 'test/**/*'].reject! { |fn| fn.include? 'vendor' or fn.include? '.gem' }.to_a
+  s.files       = FileList[
+                    'lib/**/*',
+                    'script/*', '[A-Z]*',
+                    'test/**/*']
+                  .reject! { |fn| fn.include? 'vendor' or fn.include? '.gem' }
+                  .to_a
   s.homepage    = 'https://github.com/willf/streaming_stats'
   s.license     = 'MIT'
   s.bindir      = 'script'

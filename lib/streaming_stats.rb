@@ -205,7 +205,7 @@ class StreamingStats
             g: g_i_star + @S[i + 1].g,
             delta: @S[i + 1].delta
           )
-          splice!(@S, start_indx, 2 + (i - start_indx), merged)
+          StreamingStats.splice!(@S, start_indx, 2 + (i - start_indx), merged)
           i = start_indx
         end
       end
@@ -236,7 +236,7 @@ class StreamingStats
     i = _find_insertion_index(v)
     delta = _determine_delta(i)
     tuple = OpenStruct.new(v: v, g: 1, delta: delta)
-    splice!(@S, i, 0, tuple)
+    StreamingStats.splice!(@S, i, 0, tuple)
     @S
   end
 
