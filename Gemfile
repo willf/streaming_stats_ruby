@@ -2,6 +2,8 @@
 
 source 'https://rubygems.org'
 gem 'activesupport', '~> 5.2'
+gem 'optimist'
+
 
 group :development, :test do
   gem 'byebug'
