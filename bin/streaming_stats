@@ -3,50 +3,50 @@ require 'streaming_stats'
 require 'getoptlong'
 
 opts = GetoptLong.new(
-  [ '--help', '-h', GetoptLong::NO_ARGUMENT ],
-  [ '--every', '-n', GetoptLong::OPTIONAL_ARGUMENT ],
+  ['--help', '-h', GetoptLong::NO_ARGUMENT],
+  ['--every', '-n', GetoptLong::OPTIONAL_ARGUMENT]
 )
 
 opts.each do |opt, arg|
-    case opt
-      when '--help'
-        puts <<-EOF
-Prints streaming stats from numbers in STDIN
-  -help, -h:
-     show help 
-  --every x, -n x:
-     display stats every x numbers. default: 5
-EOF
-  exit()
-      when '--every'
-        $every = arg.to_i
-    end
+  case opt
+  when '--help'
+    puts <<~EOF
+      Prints streaming stats from numbers in STDIN
+        -help, -h:
+           show help 
+        --every x, -n x:
+           display stats every x numbers. default: 5
+    EOF
+    exit
+  when '--every'
+    $every = arg.to_i
   end
+end
 
 $gk = StreamingStats.new
 $last_v = 0
 
 def tell(v)
   vals = [v, $gk.mean, $gk.stddev, $gk.min, $gk.max, $gk.quantile(0.99)]
-  vals = vals.map{|val| sprintf( "%0.02f", val)}
+  vals = vals.map { |val| format('%0.02f', val) }
   vals = [$gk.n] + vals
   puts vals.join("\t")
   STDOUT.flush
 end
 
-trap("INT") do 
-    puts
-    STDOUT.flush
-    tell($last_v)
-    exit(0)
+trap('INT') do
+  puts
+  STDOUT.flush
+  tell($last_v)
+  exit(0)
 end
 
-puts ["n", "v", "μ", "σ", "min", "max", "p99"].join("\t")
+puts %w[n v μ σ min max p99].join("\t")
 
 loop do
   inv = gets
   val = inv.to_f
   $last_v = val
   $gk.insert val
-  tell(val) if ($gk.n % $every).zero? 
+  tell(val) if ($gk.n % $every).zero?
 end
