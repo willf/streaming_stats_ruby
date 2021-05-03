@@ -1,6 +1,6 @@
 # Streaming Stats
 
-![Ruby](https://github.com/willf/streaming_stats/actions/workflows/ruby.yml/badge.svg) [![Gem Version](https://badge.fury.io/rb/streaming_stats.svg)](https://badge.fury.io/rb/streaming_stats)
+![Ruby](https://github.com/willf/streaming_stats/actions/workflows/ruby.yml/badge.svg)  [![Gem Version](https://badge.fury.io/rb/streaming_stats.svg)](https://badge.fury.io/rb/streaming_stats)
 
 StreamingStats is a Ruby class that takes streaming numeric data
 and return descriptive statistics with minimal overhead.
