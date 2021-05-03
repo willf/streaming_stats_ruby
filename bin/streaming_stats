@@ -15,7 +15,7 @@ opts.each do |opt, arg|
   case opt
   when '--help'
     puts <<~HELPME
-      Prints streaming stats from numbers in STDIN
+      Prints streaming stats from numbers in $STDIN
         -help, -h:
            show help 
         --every x, -n x:
