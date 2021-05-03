@@ -56,3 +56,29 @@ my very first Gist: https://gist.github.com/willf/187846.
 The approximate quartile method is a port of [streaming-percentiles-js](https://github.com/sengelha/streaming-percentiles-js).
 
  How to calculate streaming percentiles is discussed in Steven Englehardt's series, [Calculating Percentiles on Streaming Data](https://www.stevenengelhardt.com/series/calculating-percentiles-on-streaming-data/).
+
+
+## Script version
+
+There is also a script version, which will take read numbers from STDIN and produce results on a regular basis:
+
+```
+$ bin/streaming_stats --help
+Prints streaming stats from numbers in $STDIN
+  -help, -h:
+     show help 
+  --every x, -n x:
+     display stats every x numbers. default: 5
+```
+
+For example:
+
+```
+$ ping 8.8.8.8 | ack -oh '\d+\.\d{2,}' --flush | bin/streaming_stats -n 10
+n       v       μ       σ       min     max     p99
+10      16.99   19.77   2.61    16.99   26.43   21.36
+20      25.19   20.56   2.87    16.99   27.13   26.43
+^C
+22      19.01   20.4    2.79    16.99   27.13   26.43
+
+```
