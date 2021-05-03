@@ -52,5 +52,5 @@ loop do
   val = inv.to_f
   last_v = val
   ss.insert val
-  tell(val,ss) if (ss.n % every).zero?
+  tell(val, ss) if (ss.n % every).zero?
 end
