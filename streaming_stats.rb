@@ -1,3 +1,3 @@
 # frozen_string_literal: true
 
-require './lib/streaming_stats'
+require_relative  './lib/streaming_stats'

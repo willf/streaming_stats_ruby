@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'streaming_stats'
+require_relative '../streaming_stats'
 require 'getoptlong'
 
 opts = GetoptLong.new(
@@ -27,20 +27,20 @@ opts.each do |opt, arg|
   end
 end
 
-gk = StreamingStats.new
+ss = StreamingStats.new
 last_v = 0
 
-def tell(v)
+def tell(v, gk)
   vals = [v, gk.mean, gk.stddev, gk.min, gk.max, gk.quantile(0.99)]
   vals = vals.map { |val| val.round(2).to_s }
   vals = [gk.n] + vals
   puts vals.join("\t")
-  stdout.flush
+  $stdout.flush
 end
 
 trap('INT') do
   puts
-  stdout.flush
+  $stdout.flush
   tell(last_v)
   exit(0)
 end
@@ -51,6 +51,6 @@ loop do
   inv = gets
   val = inv.to_f
   last_v = val
-  gk.insert val
-  tell(val) if (gk.n % every).zero?
+  ss.insert val
+  tell(val,ss) if (ss.n % every).zero?
 end
