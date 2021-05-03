@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
+
 require 'streaming_stats'
 require 'getoptlong'
 
@@ -7,37 +9,39 @@ opts = GetoptLong.new(
   ['--every', '-n', GetoptLong::OPTIONAL_ARGUMENT]
 )
 
+every = 5
+
 opts.each do |opt, arg|
   case opt
   when '--help'
-    puts <<~EOF
+    puts <<~HELPME
       Prints streaming stats from numbers in STDIN
         -help, -h:
            show help 
         --every x, -n x:
            display stats every x numbers. default: 5
-    EOF
+    HELPME
     exit
   when '--every'
-    $every = arg.to_i
+    every = arg.to_i
   end
 end
 
-$gk = StreamingStats.new
-$last_v = 0
+gk = StreamingStats.new
+last_v = 0
 
 def tell(v)
-  vals = [v, $gk.mean, $gk.stddev, $gk.min, $gk.max, $gk.quantile(0.99)]
-  vals = vals.map { |val| format('%0.02f', val) }
-  vals = [$gk.n] + vals
+  vals = [v, gk.mean, gk.stddev, gk.min, gk.max, gk.quantile(0.99)]
+  vals = vals.map { |val| val.round(2).to_s }
+  vals = [gk.n] + vals
   puts vals.join("\t")
-  STDOUT.flush
+  stdout.flush
 end
 
 trap('INT') do
   puts
-  STDOUT.flush
-  tell($last_v)
+  stdout.flush
+  tell(last_v)
   exit(0)
 end
 
@@ -46,7 +50,7 @@ puts %w[n v μ σ min max p99].join("\t")
 loop do
   inv = gets
   val = inv.to_f
-  $last_v = val
-  $gk.insert val
-  tell(val) if ($gk.n % $every).zero?
+  last_v = val
+  gk.insert val
+  tell(val) if (gk.n % every).zero?
 end

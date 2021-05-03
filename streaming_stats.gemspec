@@ -19,5 +19,5 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/willf/streaming_stats'
   s.license     = 'MIT'
   s.bindir      = 'script'
-  s.required_ruby_version = '>= 2.4'
+  s.required_ruby_version = '>= 2.6.6'
 end
