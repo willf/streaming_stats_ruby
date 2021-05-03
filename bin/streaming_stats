@@ -41,7 +41,7 @@ end
 trap('INT') do
   puts
   $stdout.flush
-  tell(last_v)
+  tell(last_v, ss)
   exit(0)
 end
 
