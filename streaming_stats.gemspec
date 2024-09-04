@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
                     'test/**/*']
                   .reject! { |fn| fn.include? 'vendor' or fn.include? '.gem' }
                   .to_a
-  s.homepage    = 'https://github.com/willf/streaming_stats'
+  s.homepage    = 'https://github.com/willf/streaming_stats_ruby'
   s.license     = 'MIT'
   s.bindir      = 'script'
   s.required_ruby_version = '>= 2.6.6'
