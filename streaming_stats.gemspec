@@ -4,7 +4,7 @@ require 'rake'
 
 Gem::Specification.new do |s|
   s.name = 'streaming_stats'
-  s.version     = '0.1.5'
+  s.version     = '0.1.6'
   s.date        = '2020-10-08'
   s.summary     = 'Calculates descriptive statistics from streams'
   s.description = 'Calculates descriptive statistics from streams with minimal overhead'
