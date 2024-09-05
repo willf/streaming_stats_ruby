@@ -17,9 +17,9 @@ Gem::Specification.new do |s|
                   .reject! { |fn| fn.include? 'vendor' or fn.include? '.gem' }
                   .to_a
   s.homepage    = 'https://rubygems.org/gems/streaming_stats'
-  s.metadata    = { "source_code_uri" => "https://github.com/willf/streaming_stats_ruby" }
+  s.metadata    = { 'source_code_uri' => 'https://github.com/willf/streaming_stats_ruby' }
 
   s.license     = 'MIT'
   s.bindir      = 'script'
-  s.required_ruby_version = '>= 2.6.6'
+  s.required_ruby_version = '>= 3.0'
 end
