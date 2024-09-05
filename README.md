@@ -1,6 +1,6 @@
 # Streaming Stats
 
-![Ruby](https://github.com/willf/streaming_stats/actions/workflows/ruby.yml/badge.svg)  [![Gem Version](https://badge.fury.io/rb/streaming_stats.svg)](https://badge.fury.io/rb/streaming_stats)
+[![Gem Version](https://badge.fury.io/rb/streaming_stats.svg)](https://badge.fury.io/rb/streaming_stats)
 
 StreamingStats is a Ruby class that takes streaming numeric data
 and return descriptive statistics with minimal overhead.
@@ -50,13 +50,12 @@ gk.compression_ratio
 => 0.9927
 ```
 
-The basic stats (n, sum, mean, variance, stddev) are from 
+The basic stats (n, sum, mean, variance, stddev) are from
 my very first Gist: https://gist.github.com/willf/187846.
 
 The approximate quartile method is a port of [streaming-percentiles-js](https://github.com/sengelha/streaming-percentiles-js).
 
- How to calculate streaming percentiles is discussed in Steven Englehardt's series, [Calculating Percentiles on Streaming Data](https://www.stevenengelhardt.com/series/calculating-percentiles-on-streaming-data/).
-
+How to calculate streaming percentiles is discussed in Steven Englehardt's series, [Calculating Percentiles on Streaming Data](https://www.stevenengelhardt.com/series/calculating-percentiles-on-streaming-data/).
 
 ## Script version
 
@@ -66,7 +65,7 @@ There is also a script version, which will take read numbers from STDIN and prod
 $ bin/streaming_stats --help
 Prints streaming stats from numbers in $STDIN
   -help, -h:
-     show help 
+     show help
   --every x, -n x:
      display stats every x numbers. default: 5
 ```
